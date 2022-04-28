@@ -1,0 +1,27 @@
+<script>
+  const streamlitDoc = window.parent.document;
+
+  buttons = Array.from(streamlitDoc.querySelectorAll(".stButton > button"));
+
+  const yes_button = buttons.find((el) => el.innerText === "Yes");
+  const no_button = buttons.find((el) => el.innerText === "No");
+  const undo_button = buttons.find((el) => el.innerText === "Undo");
+
+  yes_button.style.backgroundColor = "DarkSeaGreen";
+  no_button.style.backgroundColor = "coral";
+  undo_button.style.backgroundColor = "PeachPuff";
+
+  streamlitDoc.addEventListener("keydown", function (e) {
+    switch (e.key) {
+      case "a":
+        no_button.click();
+        break;
+      case "d":
+        yes_button.click();
+        break;
+      case "s":
+        undo_button.click();
+        break;
+    }
+  });
+</script>
