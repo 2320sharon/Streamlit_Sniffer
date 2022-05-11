@@ -11,8 +11,8 @@ st.set_page_config(
      layout="centered",
      initial_sidebar_state="collapsed",
      menu_items={
-         'Get Help': None,
-         'Report a bug': None,
+         'Get Help': "https://github.com/2320sharon/Streamlit_Sniffer",
+         'Report a bug': "https://github.com/2320sharon/Streamlit_Sniffer/issues",
          'About': "# Sniffer. Sort your *extremely* cool images!"
      }
  )
@@ -40,8 +40,9 @@ if 'df' not in st.session_state:
     st.session_state.df=pd.DataFrame(columns=['Filename','Sorted','Index'])
 
 # img_idx will always be inside images_list
-if st.session_state.img_idx > (len(images_list)):
+if st.session_state.img_idx > (len(images_list)+2):
     st.session_state.img_idx = (len(images_list)-1) if (len(images_list)-1)>0 else 0
+
 
 def create_csv():
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
@@ -120,6 +121,7 @@ with col1:
     st.button(label="Undo",key="undo_button",on_click=undo_button)
     
 with col2:
+    st.write(f"{st.session_state.img_idx} of {num_images}")
     # Display done.jpg when all images are sorted 
     if st.session_state.img_idx>=len(images_list):
         image = Image.open("./assets/done.jpg")
