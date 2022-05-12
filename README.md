@@ -9,15 +9,12 @@
 
 ## How to Use Sniffer on Your Computer 🐕 🔧
 1. Create an environment with Streamlit installed. See [Streamlit's instructions](https://docs.streamlit.io/library/get-started/installation#:~:text=Set%20up%20your%20virtual%20environment) for more details for your compouter.
-2. Go to the directory where you installed Sniffer
-   </br>
+2. Open your terminal<a href="url"><img src="https://user-images.githubusercontent.com/61564689/168151976-84c1ed67-518b-40b5-845e-6d859e43595b.png" align="center" height="30" width="30" ></a>
+
+ 3. Go to the directory where you installed Sniffer
    `cd <location where you saved Sniffer>`
-   </br>
-3. Run `streamlit run sniffer.py`
-4. Wait for it to open your browser and you're done! 🎊
-
-
-
+4. Run `streamlit run sniffer.py`
+5. Wait for it to open your browser and you're done! 🎊
 
 
 ## Don't want to use Streamlit
