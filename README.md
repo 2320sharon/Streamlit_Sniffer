@@ -6,6 +6,9 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Python 3.7](https://img.shields.io/badge/python-3.7-red.svg)](https://www.python.org/downloads/release/python-370/)
 </br>
+<img src="https://user-images.githubusercontent.com/61564689/168155940-8f3a0408-48a2-4998-894e-3d2d861847de.gif" width=650 >
+
+</br>
 
 ## How to Use Sniffer on Your Computer 🐕 🔧
 1. Create an environment with Streamlit installed. See [Streamlit's instructions](https://docs.streamlit.io/library/get-started/installation#:~:text=Set%20up%20your%20virtual%20environment) for more details for your compouter.
