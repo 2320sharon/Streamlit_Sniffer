@@ -16,10 +16,11 @@ st.set_page_config(
      }
  )
 
-uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
-for uploaded_file in uploaded_files:
-     bytes_data = uploaded_file.read()
-images_list=uploaded_files
+with st.expander("See Upload", expanded=True):
+    uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
+    for uploaded_file in uploaded_files:
+        bytes_data = uploaded_file.read()
+    images_list=uploaded_files
 
 
 def create_csv_name(csv_filename:str=None)->str:
