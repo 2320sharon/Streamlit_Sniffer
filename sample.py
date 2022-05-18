@@ -113,14 +113,15 @@ if images_list!=[] and st.session_state.img_idx < len(images_list) and st.sessio
     cols=CONST_COLS
     with form:
         if st.session_state.imgs_per_row != None:
-            # cols_boxes=form.columns(2)
-            # cols=2
             st.write("imgs per row: ",st.session_state.imgs_per_row)
-
             cols_boxes=form.columns(st.session_state.imgs_per_row)
             cols=st.session_state.imgs_per_row
         else:
-            cols_boxes=form.columns(cols)
+            if len(images_list) <= cols:
+                cols_boxes=form.columns(len(images_list))
+                cols=len(images_list)
+            else:
+                 cols_boxes=form.columns(cols)   
         # cols_boxes = form.columns(5), form.columns(5), form.columns(5)
         
         # Make the number of images to display match the checkboxes
@@ -128,10 +129,12 @@ if images_list!=[] and st.session_state.img_idx < len(images_list) and st.sessio
         # number of images that can be displayed.
         # num_images will always be >= 1
         if cols >0:
+            st.write("cols",cols)
             if images_list != []:
                 for i in range(cols):
-                    img = Image.open(images_list[st.session_state.img_idx+i])
-                    cols_boxes[i].image(img,width=100)
+                    st.write("cols",cols)
+                    # img = Image.open(images_list[st.session_state.img_idx+i])
+                    # cols_boxes[i].image(img,width=100)
                 labels=[""]*cols
                 for i in range(cols):
                     curr_idx=(st.session_state.img_idx+i)
