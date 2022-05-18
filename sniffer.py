@@ -25,7 +25,7 @@ def get_model(model_name:str,model_path:str=os.getcwd()+ os.sep+"models"):
     return model
 
 # Load the model from the singleton cache
-model=get_model("binary_classification_model_v_2_3_6")
+model=get_model("binary_classification_model_v_2_1")
 
 with st.expander("See Upload", expanded=True):
     uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
