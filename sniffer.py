@@ -1,11 +1,9 @@
 import streamlit as st
 import os
 import pandas as pd
-import numpy as np
 import tensorflow as tf
 from PIL import Image
-from datetime import datetime
-from classifier_tools import classifier_funcs
+from classifier_tools import classifier_funcs,csv_funcs
 
 st.set_page_config(
      page_title="Sniffer",
@@ -27,7 +25,7 @@ def get_model(model_name:str,model_path:str=os.getcwd()+ os.sep+"models"):
     return model
 
 # Load the model from the singleton cache
-model=get_model("binary_classification_model_v_2_1")
+model=get_model("binary_classification_model_v_2_3_6")
 
 with st.expander("See Upload", expanded=True):
     uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
@@ -35,16 +33,6 @@ with st.expander("See Upload", expanded=True):
         bytes_data = uploaded_file.read()
     images_list=uploaded_files
 
-
-def create_csv_name(csv_filename:str=None)->str:
-    today = datetime.now()
-    if csv_filename is not None:
-        if not csv_filename.endswith(".csv"):
-            csv_filename += ".csv"
-    elif csv_filename is None:
-        d1 = today.strftime("%d_%m_%Y_hr_%H_%M")
-        csv_filename = f"Sniffer_Output_" + d1 + ".csv"
-    return csv_filename
 
 # Initialize Sniffer's states
 if 'img_idx' not in st.session_state:
@@ -57,15 +45,6 @@ if 'pred_df' not in st.session_state:
 # img_idx will always be inside images_list
 if st.session_state.img_idx > (len(images_list)+2):
     st.session_state.img_idx = (len(images_list)-1) if (len(images_list)-1)>0 else 0
-
-def create_csv(df,df2=None):
-    if  not isinstance(df2,type(None)):
-        if df2.empty == False and df.empty == False:
-            return pd.concat([df,df2],ignore_index=True).to_csv(index=False).encode('utf-8')
-        elif df2.empty == False and df.empty == True:
-            return df2.to_csv(index=False).encode('utf-8')
-    return df.to_csv(index=False).encode('utf-8')
-
 
 def predict():
     # Make sure the images list is not empty and the index is valid
@@ -154,20 +133,20 @@ with col2:
 with col4:
     st.download_button(
      label="Download choices as CSV 🦮", 
-     data=create_csv( st.session_state.choice_df),
-     file_name= create_csv_name(),
+     data=csv_funcs.create_csv( st.session_state.choice_df),
+     file_name= csv_funcs.create_csv_name(),
      mime='text/csv',)
 
     st.download_button(
      label="Download predictions as CSV ✨",
-     data=create_csv(st.session_state.pred_df),
-     file_name= create_csv_name(),
+     data=csv_funcs.create_csv(st.session_state.pred_df),
+     file_name= csv_funcs.create_csv_name(),
      mime='text/csv',)
 
     st.download_button(
      label="Download predictions & choices as CSV 💻",
-     data=create_csv(st.session_state.choice_df,st.session_state.pred_df),
-     file_name= create_csv_name(),
+     data=csv_funcs.create_csv(st.session_state.choice_df,st.session_state.pred_df),
+     file_name= csv_funcs.create_csv_name(),
      mime='text/csv',)
 
 with st.expander("See Predictions Details 📈"):
