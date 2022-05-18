@@ -1,0 +1,12 @@
+##conda env create --file streamlit_sniffer.yml
+name: machine_learning
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pillow
+  - numpy
+  - pandas
+  - pip:
+      - tensorflow
+      - streamlit
