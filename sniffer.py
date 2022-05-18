@@ -26,6 +26,12 @@ def get_model(model_name:str,model_path:str=os.getcwd()+ os.sep+"models"):
 
 # Load the model from the singleton cache
 model=get_model("binary_classification_model_v_2_1")
+# ,unsafe_allow_html=True
+
+st.title("Sniffer🐕")
+with st.expander("See Instructions"):
+    st.image("./assets/sniffer.jpg")
+    csv_funcs.print_instructions()
 
 with st.expander("See Upload", expanded=True):
     uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
@@ -102,8 +108,6 @@ else:
     else:
         image = Image.open(images_list[st.session_state.img_idx])
 
-st.title("Sniffer🐕")
-st.image("./assets/sniffer.jpg")
 
 # Sets num_image=1 if images_list is empty
 num_images=(len(images_list)) if (len(images_list))>0 else 1
