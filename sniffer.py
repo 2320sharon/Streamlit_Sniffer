@@ -32,7 +32,7 @@ model = get_model("binary_classification_model_v_2_1")
 # ,unsafe_allow_html=True
 
 st.title("Sniffer🐕")
-with st.expander("See Instructions"):
+with st.expander("See Instructions",expanded=True):
     st.image("./assets/sniffer.jpg")
     csv_funcs.print_instructions()
 
