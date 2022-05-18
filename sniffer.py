@@ -170,7 +170,8 @@ with col4:
      file_name= create_csv_name(),
      mime='text/csv',)
 
-with st.expander("See Dataset Details 📈"):
+with st.expander("See Predictions Details 📈"):
     st.dataframe(st.session_state.pred_df)
+with st.expander("See Choices Details 👌"):
     st.dataframe(st.session_state.choice_df)
     st.bar_chart(st.session_state.choice_df['Sorted'].value_counts())
