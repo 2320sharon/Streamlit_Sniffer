@@ -59,7 +59,7 @@ def predict():
             classifier_funcs.create_predictions_df(predictions,images_list[start:end+1])
 
 
-def yes_button():
+def good_button():
     if -1 < st.session_state.img_idx <= (len(images_list)-1)   :
         row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"good"}
         st.session_state.choice_df=pd.concat([st.session_state.choice_df,pd.DataFrame.from_records([row])],ignore_index=True)
@@ -71,7 +71,7 @@ def yes_button():
         st.warning(f'No more images to sort { st.session_state.img_idx} /{ len(images_list)} ')
 
 
-def no_button():
+def bad_button():
     if -1 < st.session_state.img_idx <= (len(images_list)-1) :
         row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"bad"}
         st.session_state.choice_df=pd.concat([st.session_state.choice_df,pd.DataFrame.from_records([row])],ignore_index=True)
@@ -116,8 +116,8 @@ except st.StreamlitAPIException:
 
 col1,col2,col3,col4=st.columns(4)
 with col1:
-    st.button(label="Yes",key="yes_button",on_click=yes_button)
-    st.button(label="No",key="no_button",on_click=no_button)
+    st.button(label="Good",key="good_button",on_click=good_button)
+    st.button(label="Bad",key="bad_button",on_click=bad_button)
     st.button(label="Undo",key="undo_button",on_click=undo_button)
     st.button(label="✨ Predict ✨",key="predict_button",on_click=predict)
 with col2:
