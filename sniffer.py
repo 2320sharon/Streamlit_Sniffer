@@ -116,10 +116,12 @@ except st.StreamlitAPIException:
 
 col1,col2,col3,col4=st.columns(4)
 with col1:
+    blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=1.0, value=10.0, min_value=0.0, max_value=100.0)
+    st.write(blk_percent)
     st.button(label="Yes",key="yes_button",on_click=yes_button)
     st.button(label="No",key="no_button",on_click=no_button)
     st.button(label="Undo",key="undo_button",on_click=undo_button)
-    st.button(label="✨ Predict ✨",key="predict_button",on_click=predict)
+    st.button(label="✨ Predict ✨",key="predict_button",on_click=predict,kwargs={"blk_percnt":blk_percent})
 with col2:
     # Display done.jpg when all images are sorted 
     if st.session_state.img_idx>=len(images_list):
