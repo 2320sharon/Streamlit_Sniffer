@@ -37,6 +37,10 @@ if 'img_idx' not in st.session_state:
     st.session_state.img_idx=0
 if 'df' not in st.session_state:
     st.session_state.df=pd.DataFrame(columns=['Filename','Sorted','Index'])
+if 'cache_blk_pxl_percnt' not in st.session_state:
+    st.session_state.cache_blk_pxl_percnt=0
+if 'blk_pxl_dict' not in st.session_state:
+    st.session_state.blk_pxl_dict={}
 
 # img_idx will always be inside images_list
 if st.session_state.img_idx > (len(images_list)+2):
@@ -105,6 +109,11 @@ except st.StreamlitAPIException:
 
 col1,col2,col3,col4=st.columns(4)
 with col1:
+    blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=1.0, value=50.0, min_value=0.0, max_value=100.0)
+    st.write(blk_percent)
+    if blk_percent != st.session_state.cache_blk_pxl_percnt:
+        # Update the 
+        st.session_state.blk_pxl_dict
     st.button(label="Yes",key="yes_button",on_click=yes_button)
     st.button(label="No",key="no_button",on_click=no_button)
     st.button(label="Undo",key="undo_button",on_click=undo_button)
