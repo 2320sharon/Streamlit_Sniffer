@@ -1,3 +1,4 @@
+from tkinter import image_names
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -16,11 +17,32 @@ st.set_page_config(
      }
  )
 
+def get_percent_blk_pixels(img):
+    img_array=np.array(img)
+    w,h=img_array.shape[0:2]
+    total_pixels=w*h if img_array.ndim<3 else w*h*img_array.shape[2]
+    black_count = np.sum(img_array == 0)
+    return np.round(black_count/total_pixels,3)
+
+if 'length_images_list' not in st.session_state:
+    st.session_state.length_images_list=-1
+if 'blk_pxl_dict' not in st.session_state:
+    st.session_state.blk_pxl_dict={}
+
+
 uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
 for uploaded_file in uploaded_files:
      bytes_data = uploaded_file.read()
 images_list=uploaded_files
-
+if st.session_state.length_images_list != len(images_list):
+    st.session_state.length_images_list=len(images_list)
+    for file in uploaded_files:
+        if file.name not in st.session_state.blk_pxl_dict.keys():
+            img = Image.open(file)
+            blk_pixels=get_percent_blk_pixels(img)
+            st.session_state.blk_pxl_dict[file.name]=blk_pixels
+            
+st.write(st.session_state.blk_pxl_dict)
 
 def create_csv_name(csv_filename:str=None)->str:
     today = datetime.now()
@@ -37,12 +59,8 @@ if 'img_idx' not in st.session_state:
     st.session_state.img_idx=0
 if 'df' not in st.session_state:
     st.session_state.df=pd.DataFrame(columns=['Filename','Sorted','Index'])
-if 'cache_blk_pxl_percnt' not in st.session_state:
-    st.session_state.cache_blk_pxl_percnt=0
-if 'blk_pxl_dict' not in st.session_state:
-    st.session_state.blk_pxl_dict={}
 
-# img_idx will always be inside images_list
+
 if st.session_state.img_idx > (len(images_list)+2):
     st.session_state.img_idx = (len(images_list)-1) if (len(images_list)-1)>0 else 0
 
@@ -52,10 +70,12 @@ def create_csv():
     st.session_state.df.to_csv().encode('utf-8')
     return st.session_state.df.to_csv().encode('utf-8')
 
+
 def yes_button():
     if -1 < st.session_state.img_idx <= (len(images_list)-1)   :
-        row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"good",'Index':st.session_state.img_idx}
-        st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
+        if st.session_state.blk_pxl_dict[images_list[st.session_state.img_idx].name] <= blk_percent:
+            row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"good",'Index':st.session_state.img_idx}
+            st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
         st.session_state.img_idx += 1
     elif st.session_state.img_idx ==(len(images_list)):
         st.success('All images have been sorted!')
@@ -66,8 +86,9 @@ def yes_button():
 
 def no_button():
     if -1 < st.session_state.img_idx <= (len(images_list)-1) :
-        row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"bad",'Index':st.session_state.img_idx}
-        st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
+        if st.session_state.blk_pxl_dict[images_list[st.session_state.img_idx].name] <= blk_percent:
+            row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"bad",'Index':st.session_state.img_idx}
+            st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
         st.session_state.img_idx += 1
     elif st.session_state.img_idx == (len(images_list)):
         st.success('All images have been sorted!')
@@ -87,14 +108,6 @@ def undo_button():
         st.warning('Cannot Undo')
 
 
-if images_list==[]:
-    image= Image.open("./assets/new_loading_sniffer.jpg")
-else:
-    if st.session_state.img_idx>=len(images_list):
-        image = Image.open("./assets/done.jpg")
-    else:
-        image = Image.open(images_list[st.session_state.img_idx])
-
 st.title("Sniffer🐕")
 st.image("./assets/sniffer.jpg")
 
@@ -109,25 +122,33 @@ except st.StreamlitAPIException:
 
 col1,col2,col3,col4=st.columns(4)
 with col1:
-    blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=1.0, value=50.0, min_value=0.0, max_value=100.0)
+    blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=0.01, value=0.50, min_value=0.0, max_value=1.0)
     st.write(blk_percent)
-    if blk_percent != st.session_state.cache_blk_pxl_percnt:
-        # Update the 
-        st.session_state.blk_pxl_dict
     st.button(label="Yes",key="yes_button",on_click=yes_button)
     st.button(label="No",key="no_button",on_click=no_button)
     st.button(label="Undo",key="undo_button",on_click=undo_button)
     
 with col2:
     st.write(f"{st.session_state.img_idx} of {num_images}")
-    # Display done.jpg when all images are sorted 
-    if st.session_state.img_idx>=len(images_list):
-        image = Image.open("./assets/done.jpg")
-        st.image(image,width=300)
+    if images_list==[]:
+        image= Image.open("./assets/new_loading_sniffer.jpg")
     else:
-        # caption is "" when images_list is empty otherwise its image name 
-        caption = '' if images_list==[] else f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
-        st.image(image, caption=caption,width=300)
+        # Display done.jpg when all images are sorted 
+        if st.session_state.img_idx>=len(images_list):
+            image = Image.open("./assets/done.jpg")
+            st.image(image,width=300)
+        else:
+            st.session_state.blk_pxl_dict[images_list[st.session_state.img_idx].name]
+            if st.session_state.blk_pxl_dict[images_list[st.session_state.img_idx].name] > blk_percent:
+                st.write("This image exceeds the allowed \% black pixels. It will not be sorted.")
+            if st.session_state.img_idx>=len(images_list):
+                image = Image.open("./assets/done.jpg")
+                st.image(image,width=300)
+            else:
+                # caption is "" when images_list is empty otherwise its image name 
+                image = Image.open(images_list[st.session_state.img_idx])
+                caption = '' if images_list==[] else f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
+                st.image(image, caption=caption,width=300)
     
 with col4:
     st.download_button(
