@@ -24,16 +24,37 @@ def get_percent_blk_pixels(img):
     black_count = np.sum(img_array == 0)
     return np.round(black_count/total_pixels,3)
 
+
 if 'length_images_list' not in st.session_state:
     st.session_state.length_images_list=-1
 if 'blk_pxl_dict' not in st.session_state:
     st.session_state.blk_pxl_dict={}
+if 'remove_imgs' not in st.session_state:
+    st.session_state.remove_imgs=False
 
+def remove_images_button():
+    st.session_state.remove_imgs = not st.session_state.remove_imgs
 
-uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
-for uploaded_file in uploaded_files:
-     bytes_data = uploaded_file.read()
-images_list=uploaded_files
+with st.expander("Upload Images",expanded=True):
+    uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
+    for uploaded_file in uploaded_files:
+        bytes_data = uploaded_file.read()
+    max_blk_percent = st.slider("Percentage of Black Pixels Allowed:", key="upload",step=0.01, value=0.50, min_value=0.0, max_value=1.0)
+    st.write("Would you like to remove the images that exceed the maximum percentage of black pixels?")
+    st.button(label="Remove Images",key="remove_images",on_click=remove_images_button)
+    if st.session_state.remove_imgs == True:
+        idx_remove=[]
+        for cnt,file in enumerate(uploaded_files):
+            img = Image.open(file)
+            blk_pixels=get_percent_blk_pixels(img)
+            if blk_pixels > max_blk_percent:
+                idx_remove.append(cnt)
+        for idx in reversed(idx_remove):
+             del uploaded_files[idx]
+    
+    images_list=uploaded_files
+                
+
 if st.session_state.length_images_list != len(images_list):
     st.session_state.length_images_list=len(images_list)
     for file in uploaded_files:
