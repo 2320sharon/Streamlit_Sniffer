@@ -60,12 +60,12 @@ if st.session_state.img_idx > (len(images_list) + 2):
 
 def create_csv():
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    st.session_state.df.to_csv().encode('utf-8')
+    st.session_state.df.to_csv(index=False).encode('utf-8')
     return st.session_state.df.to_csv().encode('utf-8')
 
 
 def increment_index(view_images_box):
-    """increments the st.session_state.img_idx to the next valid image index depending on the checkbox
+    """increments st.session_state.img_idx to next valid image index depending on the checkbox
     Args:
         view_images_box (bool): Checkbox to view images with black pixel% > limit is active
     """
@@ -83,7 +83,12 @@ def increment_index(view_images_box):
             st.session_state.img_idx += 1
 
 
-def index_out_of_range(idx, length):
+def index_out_of_range(idx: int, length: int):
+    """ Handles all instances when the index is out of range of the images list
+    Args:
+        idx (int): current index
+        length (int): length of the images list
+    """
     if idx == (length):
         st.success('All images have been sorted!')
         st.balloons()
@@ -166,6 +171,7 @@ with col2:
         else:
             percent_blk_pixels = get_percent_blk_pixels(images_list[st.session_state.img_idx])
             st.write(f"Percentage of Black Pixels : {round(percent_blk_pixels*100,4)}%")
+            # Display warning msg if current percentage of black pixels exceeds limit
             if percent_blk_pixels > blk_percent:
                 st.write("This image exceeds limit of allowed black_pixels. It will not be sorted.")
             if st.session_state.img_idx >= len(images_list):
