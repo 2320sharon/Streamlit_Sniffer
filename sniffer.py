@@ -64,7 +64,7 @@ def create_csv():
     return st.session_state.df.to_csv().encode('utf-8')
 
 
-def increment_index(view_images_box,blk_percent):
+def increment_index(view_images_box, blk_percent):
     """increments st.session_state.img_idx to next valid image index depending on the checkbox
     Args:
         view_images_box (bool): Checkbox to view images with black pixel% > limit is active
@@ -74,13 +74,15 @@ def increment_index(view_images_box,blk_percent):
     elif not view_images_box:
         # Add the current index as a valid index to list of valid index to undo to
         st.session_state.undo_indexes.append(st.session_state.img_idx)
+        st.session_state.img_idx += 1
         if -1 < st.session_state.img_idx <= (len(images_list) - 1):
-            st.session_state.img_idx += 1
             if get_percent_blk_pixels(images_list[st.session_state.img_idx]) > blk_percent:
                 # Continue incrementing index while in range and percnt_blk_pixels > limit
-                while (-1 < st.session_state.img_idx <= (len(images_list) - 1)) and (get_percent_blk_pixels(images_list[st.session_state.img_idx]) > blk_percent):
-                        st.session_state.img_idx += 1
-                index_out_of_range(st.session_state.img_idx,len(images_list))
+                while (-1 < st.session_state.img_idx <= (len(images_list) - 1)
+                       ) and (get_percent_blk_pixels(images_list[st.session_state.img_idx]) > blk_percent):
+                    st.session_state.img_idx += 1
+                index_out_of_range(st.session_state.img_idx, len(images_list))
+
 
 def index_out_of_range(idx: int, length: int):
     """ Handles all instances when the index is out of range of the images list
@@ -97,12 +99,12 @@ def index_out_of_range(idx: int, length: int):
 
 def yes_button(**kwargs):
     view_images_box = kwargs["checkbox"]
-    blk_percent=kwargs["blk_percent"]
+    blk_percent = kwargs["blk_percent"]
     if -1 < st.session_state.img_idx <= (len(images_list) - 1):
         if get_percent_blk_pixels(images_list[st.session_state.img_idx]) <= blk_percent:
             row = {"Filename": images_list[st.session_state.img_idx].name, 'Sorted': "good"}
             st.session_state.df = pd.concat([st.session_state.df, pd.DataFrame.from_records([row])], ignore_index=True)
-        increment_index(view_images_box,blk_percent)
+        increment_index(view_images_box, blk_percent)
     else:
         # Handles all cases when index is out of range
         index_out_of_range(st.session_state.img_idx, len(images_list))
@@ -110,12 +112,12 @@ def yes_button(**kwargs):
 
 def no_button(**kwargs):
     view_images_box = kwargs["checkbox"]
-    blk_percent=kwargs["blk_percent"]
+    blk_percent = kwargs["blk_percent"]
     if -1 < st.session_state.img_idx <= (len(images_list) - 1):
         if get_percent_blk_pixels(images_list[st.session_state.img_idx]) <= blk_percent:
             row = {"Filename": images_list[st.session_state.img_idx].name, 'Sorted': "bad"}
             st.session_state.df = pd.concat([st.session_state.df, pd.DataFrame.from_records([row])], ignore_index=True)
-        increment_index(view_images_box,blk_percent)
+        increment_index(view_images_box, blk_percent)
     else:
         # Handles all cases when index is out of range
         index_out_of_range(st.session_state.img_idx, len(images_list))
@@ -156,8 +158,10 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=0.01, value=0.50, min_value=0.0, max_value=1.0)
     view_images_box = st.checkbox("See Images that exceed percentage of black pixel limit (They won't be sorted)")
-    st.button(label="Yes", key="yes_button", on_click=yes_button, kwargs={"checkbox": view_images_box,"blk_percent":blk_percent})
-    st.button(label="No", key="no_button", on_click=no_button, kwargs={"checkbox": view_images_box,"blk_percent":blk_percent})
+    st.button(label="Yes", key="yes_button", on_click=yes_button, kwargs={
+              "checkbox": view_images_box, "blk_percent": blk_percent})
+    st.button(label="No", key="no_button", on_click=no_button, kwargs={
+              "checkbox": view_images_box, "blk_percent": blk_percent})
     st.button(label="Undo", key="undo_button", on_click=undo_button, kwargs={"checkbox": view_images_box})
 
 with col2:
@@ -170,11 +174,14 @@ with col2:
             image = Image.open("./assets/done.jpg")
             st.image(image, width=300)
         else:
-            percent_blk_pixels = get_percent_blk_pixels(images_list[st.session_state.img_idx])
-            st.write(f"Percentage of Black Pixels : {round(percent_blk_pixels*100,2)}%")
-            # Display warning msg if current percentage of black pixels exceeds limit
-            if percent_blk_pixels > blk_percent:
-                st.write("This image exceeds limit of allowed black_pixels. It will not be sorted.")
+            # Default value when the index is out of range
+            percent_blk_pixels=0
+            if -1 < st.session_state.img_idx <= (len(images_list) - 1):
+                percent_blk_pixels = get_percent_blk_pixels(images_list[st.session_state.img_idx])
+                st.write(f"Percentage of Black Pixels : {round(percent_blk_pixels*100,2)}%")
+                # Display warning msg if current percentage of black pixels exceeds limit
+                if percent_blk_pixels > blk_percent:
+                    st.write("This image exceeds limit of allowed black_pixels. It will not be sorted.")
             if st.session_state.img_idx >= len(images_list):
                 image = Image.open("./assets/done.jpg")
                 st.image(image, width=300)
