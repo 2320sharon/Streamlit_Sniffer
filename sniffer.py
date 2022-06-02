@@ -1,5 +1,6 @@
 from tkinter import image_names
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 from PIL import Image
@@ -76,10 +77,10 @@ def increment_index(view_images_box, blk_percent):
         st.session_state.undo_indexes.append(st.session_state.img_idx)
         st.session_state.img_idx += 1
         if -1 < st.session_state.img_idx <= (len(images_list) - 1):
-            if get_percent_blk_pixels(images_list[st.session_state.img_idx]) > blk_percent:
+            if get_percent_blk_pixels(images_list[st.session_state.img_idx]) >= blk_percent:
                 # Continue incrementing index while in range and percnt_blk_pixels > limit
                 while (-1 < st.session_state.img_idx <= (len(images_list) - 1)
-                       ) and (get_percent_blk_pixels(images_list[st.session_state.img_idx]) > blk_percent):
+                       ) and (get_percent_blk_pixels(images_list[st.session_state.img_idx]) >= blk_percent):
                     st.session_state.img_idx += 1
                 index_out_of_range(st.session_state.img_idx, len(images_list))
 
@@ -100,10 +101,16 @@ def index_out_of_range(idx: int, length: int):
 def yes_button(**kwargs):
     view_images_box = kwargs["checkbox"]
     blk_percent = kwargs["blk_percent"]
+    blk_filter_enabled = kwargs["blk_filter_enabled"]
     if -1 < st.session_state.img_idx <= (len(images_list) - 1):
-        if get_percent_blk_pixels(images_list[st.session_state.img_idx]) <= blk_percent:
+        if blk_filter_enabled:
+            if get_percent_blk_pixels(images_list[st.session_state.img_idx]) < blk_percent:
+                row = {"Filename": images_list[st.session_state.img_idx].name, 'Sorted': "good"}
+                st.session_state.df = pd.concat([st.session_state.df, pd.DataFrame.from_records([row])], ignore_index=True)
+        else:
             row = {"Filename": images_list[st.session_state.img_idx].name, 'Sorted': "good"}
             st.session_state.df = pd.concat([st.session_state.df, pd.DataFrame.from_records([row])], ignore_index=True)
+            
         increment_index(view_images_box, blk_percent)
     else:
         # Handles all cases when index is out of range
@@ -114,7 +121,11 @@ def no_button(**kwargs):
     view_images_box = kwargs["checkbox"]
     blk_percent = kwargs["blk_percent"]
     if -1 < st.session_state.img_idx <= (len(images_list) - 1):
-        if get_percent_blk_pixels(images_list[st.session_state.img_idx]) <= blk_percent:
+        if blk_filter_enabled:
+            if get_percent_blk_pixels(images_list[st.session_state.img_idx]) < blk_percent:
+                row = {"Filename": images_list[st.session_state.img_idx].name, 'Sorted': "bad"}
+                st.session_state.df = pd.concat([st.session_state.df, pd.DataFrame.from_records([row])], ignore_index=True)
+        else:
             row = {"Filename": images_list[st.session_state.img_idx].name, 'Sorted': "bad"}
             st.session_state.df = pd.concat([st.session_state.df, pd.DataFrame.from_records([row])], ignore_index=True)
         increment_index(view_images_box, blk_percent)
@@ -125,15 +136,17 @@ def no_button(**kwargs):
 
 def undo_button(**kwargs):
     view_images_box = kwargs["checkbox"]
-    if view_images_box:
+    blk_filter_enabled = kwargs["blk_filter_enabled"]
+    if view_images_box or blk_filter_enabled:
         st.session_state.img_idx -= 1
     elif not view_images_box:
-        st.session_state.img_idx = st.session_state.undo_indexes.pop()
+        if len(st.session_state.undo_indexes) > 0:
+            st.session_state.img_idx = st.session_state.undo_indexes.pop()
         # Ensure the list of available undo indexes are never empty
         if len(st.session_state.undo_indexes) == 0:
             st.session_state.undo_indexes.append(0)
     # Remove filename from the dataframe
-    if st.session_state.img_idx > 0:
+    if st.session_state.img_idx >= 0:
         if images_list != [] and st.session_state.img_idx <= (len(images_list) - 1):
             drop_filename = images_list[st.session_state.img_idx].name
             drop_index = st.session_state.df.loc[st.session_state.df['Filename'] == drop_filename].index.values
@@ -156,13 +169,18 @@ except st.StreamlitAPIException:
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=0.01, value=0.50, min_value=0.0, max_value=1.0)
-    view_images_box = st.checkbox("See Images that exceed percentage of black pixel limit (They won't be sorted)")
+    view_images_box=False
+    blk_percent=50.0
+    blk_filter_enabled=st.checkbox("Enable the Black Pixel Filter?",value=True,key="blk_filter_enabled")
+    if blk_filter_enabled:
+        blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=0.01, value=0.50, min_value=0.0, max_value=1.0)
+        view_images_box = st.checkbox("See Images that exceed percentage of black pixel limit (They won't be sorted)")
+        
     st.button(label="Yes", key="yes_button", on_click=yes_button, kwargs={
-              "checkbox": view_images_box, "blk_percent": blk_percent})
+              "checkbox": view_images_box, "blk_percent": blk_percent,"blk_filter_enabled":blk_filter_enabled})
     st.button(label="No", key="no_button", on_click=no_button, kwargs={
-              "checkbox": view_images_box, "blk_percent": blk_percent})
-    st.button(label="Undo", key="undo_button", on_click=undo_button, kwargs={"checkbox": view_images_box})
+              "checkbox": view_images_box, "blk_percent": blk_percent,"blk_filter_enabled":blk_filter_enabled})
+    st.button(label="Undo", key="undo_button", on_click=undo_button, kwargs={"checkbox": view_images_box,"blk_filter_enabled":blk_filter_enabled})
 
 with col2:
     st.write(f"{st.session_state.img_idx} of {num_images}")
@@ -177,11 +195,13 @@ with col2:
             # Default value when the index is out of range
             percent_blk_pixels=0
             if -1 < st.session_state.img_idx <= (len(images_list) - 1):
-                percent_blk_pixels = get_percent_blk_pixels(images_list[st.session_state.img_idx])
-                st.write(f"Percentage of Black Pixels : {round(percent_blk_pixels*100,2)}%")
-                # Display warning msg if current percentage of black pixels exceeds limit
-                if percent_blk_pixels > blk_percent:
-                    st.write("This image exceeds limit of allowed black_pixels. It will not be sorted.")
+                # Display the percentage of black pixels in the image if the checkbox is enabled
+                if blk_filter_enabled:
+                    percent_blk_pixels = get_percent_blk_pixels(images_list[st.session_state.img_idx])
+                    st.write(f"Percentage of Black Pixels : {round(percent_blk_pixels*100,2)}%")
+                    # Display warning msg if current percentage of black pixels exceeds limit
+                    if percent_blk_pixels >= blk_percent:
+                        st.write("This image exceeds limit of allowed black_pixels. It will not be sorted.")
             if st.session_state.img_idx >= len(images_list):
                 image = Image.open("./assets/done.jpg")
                 st.image(image, width=300)
@@ -190,7 +210,7 @@ with col2:
                 image = Image.open(images_list[st.session_state.img_idx])
                 caption = '' if images_list == [
                 ] else f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
-                st.image(image, caption=caption, width=300)
+                st.image(image, caption=caption, width=250)
 
 with col4:
     st.download_button(
