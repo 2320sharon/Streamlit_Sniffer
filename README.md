@@ -19,6 +19,13 @@
 4. Run `streamlit run sniffer.py`
 5. Wait for it to open your browser and you're done! 🎊
 
+## ✨ New Feature ✨ Black Pixel Feature
+</br>
+<img src="https://user-images.githubusercontent.com/61564689/171754117-9c695747-1221-49d2-89e1-57498f36836a.gif" width=650 >
+</br>
+1. Turn on the black pixel filter to filter out images with black pixels in your dataset </br>
+2. You can use the checkbox to see images that exceed the black pixel limit you set </br>
+3. The images that exceed the black pixel limit will not be shown (except the first one) </br>
 
 ## Don't want to use Streamlit
 - Check out the orignal version of [Sniffer 🐕](https://github.com/2320sharon/Sniffer) that you can download on you local computer 
