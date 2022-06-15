@@ -85,8 +85,6 @@ def increment_index(blk_percent : int, blk_filter_enabled :bool ) -> None:
                     ) and (get_percent_blk_pixels(images_list[st.session_state.img_idx]) >= blk_percent):
                     st.session_state.img_idx += 1
                 index_out_of_range(st.session_state.img_idx, len(images_list))
-    # # Ensure new index is in range
-    # index_out_of_range(st.session_state.img_idx, len(images_list))
 
 
 def index_out_of_range(idx: int, length: int):
@@ -168,7 +166,6 @@ except st.StreamlitAPIException:
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    view_images_box=False
     blk_percent=50.0
     blk_filter_enabled=st.checkbox("Enable the Black Pixel Filter?",value=True,key="blk_filter_enabled")
     if blk_filter_enabled:
@@ -199,15 +196,18 @@ with col2:
                     st.write(f"Percentage of Black Pixels : {round(percent_blk_pixels*100,2)}%")
                     # Display warning msg if current percentage of black pixels exceeds limit
                     if percent_blk_pixels >= blk_percent:
-                        st.write("This image exceeds limit of allowed black_pixels. It will not be sorted.")
+                        increment_index(blk_percent,blk_filter_enabled)
             if st.session_state.img_idx >= len(images_list):
                 image = Image.open("./assets/done.jpg")
                 st.image(image, width=300)
             else:
-                # caption is "" when images_list is empty otherwise its image name
+                # caption is "" when images_list is empty otherwise its image name 
                 image = Image.open(images_list[st.session_state.img_idx])
-                caption = '' if images_list == [
-                ] else f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
+                if images_list == []:
+                    caption = ''
+                else:
+                    caption=f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
+                
                 st.image(image, caption=caption, width=250)
 
 with col4:
