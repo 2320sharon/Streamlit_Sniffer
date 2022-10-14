@@ -59,9 +59,7 @@ if st.session_state.img_idx > (len(images_list) + 2):
 
 
 def create_csv():
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    st.session_state.df.to_csv(index=False).encode('utf-8')
-    return st.session_state.df.to_csv().encode('utf-8')
+    return st.session_state.df.to_csv(index=False).encode('utf-8')
 
 
 def increment_index(blk_percent : int, blk_filter_enabled :bool ) -> None:
