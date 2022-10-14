@@ -196,12 +196,15 @@ with control_col_1:
     blk_percent=50.0
     blk_filter_enabled=st.checkbox("Enable the Black Pixel Filter?",value=True,key="blk_filter_enabled")
     if blk_filter_enabled:
+        st.write("Filter out images where the number of black pixels exceeds the allowed percentage:")
         blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=0.01, value=0.50, min_value=0.0, max_value=1.0)
 
 with control_col_2:
     resize_allowed = False
     show_resize_controls = st.checkbox(label='Show Resize Controls', value=False)
     if show_resize_controls:
+        st.write("Adjust the sliders to the height and width of the image you want, then check resize.")
+        st.write("To return the image to the original size uncheck resize.")
         height = st.slider('Height:', 200, 200, 1500, step=50)
         width = st.slider('Width', 200, 200, 1500, step=50)
         resize_allowed = st.checkbox(label='Resize', value=False)
