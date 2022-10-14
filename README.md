@@ -32,6 +32,16 @@
 4. Run `streamlit run sniffer.py`
 5. Wait for it to open your browser and you're done! 🎊
 
+
+## ✨ New Feature ✨ Resize Image Sliders
+</br>
+<img src="https://user-images.githubusercontent.com/61564689/195921120-3837906b-44be-4e5e-ab61-4179f3a0d23c.gif" width=465 >
+</br>
+1. Check the Show Resize Controls checkbox to show the height and width sliders
+2. Use the height and width sliders to choose height and width of your image
+3. Check the Resize checkbox to resize your image instantly ⚡
+4. Uncheck the Resize checkbox to restore your image to its original size
+
 ## ✨ New Feature ✨ New Slider to Numerically Rate Images
 
 <img src="https://user-images.githubusercontent.com/61564689/195921252-e06ea4da-a51d-4651-887d-041062d37bbf.jpg" width=450 height=400>
@@ -42,14 +52,6 @@
 3. Use the slider to rate your image
 4. Check `Next` to rate your image and save your rating to the csv file.
 
-## ✨ New Feature ✨ Resize Image Sliders
-</br>
-<img src="https://user-images.githubusercontent.com/61564689/195921120-3837906b-44be-4e5e-ab61-4179f3a0d23c.gif" width=465 >
-</br>
-1. Check the Show Resize Controls checkbox to show the height and width sliders
-2. Use the height and width sliders to choose height and width of your image
-3. Check the Resize checkbox to resize your image instantly ⚡
-4. Uncheck the Resize checkbox to restore your image to its original size
 
 ## ✨ Features ✨ Black Pixel Feature
 </br>
