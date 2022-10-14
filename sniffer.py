@@ -162,6 +162,12 @@ try:
 except st.StreamlitAPIException:
     my_bar = st.progress(0)
 
+# Radio buttons allow user to choose how they will rate images
+scale_str = 'Scale'
+yes_no_str = 'Yes No Buttons'
+with st.expander("Choose Image Controls", expanded=True):
+    rating_method = st.radio(label="Method to rate images",options =(scale_str,yes_no_str))
+
 # Interface for image controls
 control_col_1, control_col_2= st.columns([1,1])
 with control_col_1:
@@ -181,11 +187,17 @@ with control_col_2:
 # Interface to view images and rate images
 col1, col2= st.columns([1,5])
 with col1:
-      
-    st.button(label="Yes", key="yes_button", on_click=yes_button, kwargs={
-               "blk_percent": blk_percent,"blk_filter_enabled":blk_filter_enabled})
-    st.button(label="No", key="no_button", on_click=no_button, kwargs={
-               "blk_percent": blk_percent,"blk_filter_enabled":blk_filter_enabled})
+    # if user chose to use scale to rate images render scale
+    if rating_method == scale_str:
+        st.write("Scale selected")
+    
+    # if user chose to use yes/no buttons to rate images render yes/no buttons
+    if rating_method == yes_no_str:
+        st.button(label="Yes", key="yes_button", on_click=yes_button, kwargs={
+                "blk_percent": blk_percent,"blk_filter_enabled":blk_filter_enabled})
+        st.button(label="No", key="no_button", on_click=no_button, kwargs={
+                "blk_percent": blk_percent,"blk_filter_enabled":blk_filter_enabled})
+    # regardless of which option the user chooses off the undo button
     st.button(label="Undo", key="undo_button", on_click=undo_button)
 
 with col2:
