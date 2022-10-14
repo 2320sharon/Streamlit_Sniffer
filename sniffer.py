@@ -207,13 +207,22 @@ with control_col_2:
         height = st.slider('Height:', 200, 200, 1500, step=50)
         width = st.slider('Width', 200, 200, 1500, step=50)
         resize_allowed = st.checkbox(label='Resize', value=False)
+        
+# let user choose scale limits if they chose to use scale
+if rating_method == scale_str:
+    with st.expander("Change slider range"):
+        slider_col1, slider_col2= st.columns([1,1])
+        with slider_col1:
+            min_slider=st.number_input(label="Minimum Slider Value",value=0)
+        with slider_col2:
+            max_slider=st.number_input(label="Maximum Slider Value",value=5)
 
 # Interface to view images and rate images
 col1, col2= st.columns([1,5])
 with col1:
     # if user chose to use scale to rate images render scale
     if rating_method == scale_str:
-        scale_rating = st.slider('Rate Image', 0, 0, 5, step=1)
+        scale_rating = st.slider('Rate Image', min_slider, max_slider, 0, step=1)
         st.button(label="Next",on_click=next_button,
                   kwargs={"blk_percent": blk_percent,
                          "blk_filter_enabled":blk_filter_enabled,
