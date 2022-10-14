@@ -99,6 +99,30 @@ def index_out_of_range(idx: int, length: int):
         st.warning(f'No more images to sort {idx} /{length} ')
 
 
+def next_button(**kwargs):
+    blk_percent = kwargs["blk_percent"]
+    blk_filter_enabled = kwargs["blk_filter_enabled"]
+    rating = None
+    if "rating" in kwargs:
+        rating = kwargs["rating"]
+    print(rating)
+    if rating is None:
+        raise Exception("Missing the rating from the scale.")
+    if -1 < st.session_state.img_idx <= (len(images_list) - 1):
+        if blk_filter_enabled:
+            if get_percent_blk_pixels(images_list[st.session_state.img_idx]) < blk_percent:
+                row = {"Filename": images_list[st.session_state.img_idx].name, 'Sorted': rating}
+                st.session_state.df = pd.concat([st.session_state.df, pd.DataFrame.from_records([row])], ignore_index=True)
+        else:
+            row = {"Filename": images_list[st.session_state.img_idx].name, 'Sorted': rating}
+            st.session_state.df = pd.concat([st.session_state.df, pd.DataFrame.from_records([row])], ignore_index=True)
+            
+        increment_index( blk_percent,blk_filter_enabled)
+    else:
+        # Handles all cases when index is out of range
+        index_out_of_range(st.session_state.img_idx, len(images_list))
+
+
 def yes_button(**kwargs):
     blk_percent = kwargs["blk_percent"]
     blk_filter_enabled = kwargs["blk_filter_enabled"]
@@ -180,8 +204,8 @@ with control_col_2:
     resize_allowed = False
     show_resize_controls = st.checkbox(label='Show Resize Controls', value=False)
     if show_resize_controls:
-        height = st.slider('Height:', 500, 200, 1200, step=50)
-        width = st.slider('Width', 800, 200, 1200, step=50)
+        height = st.slider('Height:', 200, 200, 1500, step=50)
+        width = st.slider('Width', 200, 200, 1500, step=50)
         resize_allowed = st.checkbox(label='Resize', value=False)
 
 # Interface to view images and rate images
@@ -189,7 +213,11 @@ col1, col2= st.columns([1,5])
 with col1:
     # if user chose to use scale to rate images render scale
     if rating_method == scale_str:
-        st.write("Scale selected")
+        scale_rating = st.slider('Rate Image', 0, 0, 5, step=1)
+        st.button(label="Next",on_click=next_button,
+                  kwargs={"blk_percent": blk_percent,
+                         "blk_filter_enabled":blk_filter_enabled,
+                         "rating":scale_rating})
     
     # if user chose to use yes/no buttons to rate images render yes/no buttons
     if rating_method == yes_no_str:
@@ -234,7 +262,9 @@ with col2:
                 # resize image if user clicked resize allowed checkbox
                 if resize_allowed:
                     image = image.resize((width, height))
-                st.image(image, caption=caption, width=600)
+                else: 
+                    width = 600
+                st.image(image, caption=caption, width=width)
 
 
 st.download_button(
