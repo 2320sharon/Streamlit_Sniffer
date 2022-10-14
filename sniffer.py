@@ -163,14 +163,18 @@ try:
 except st.StreamlitAPIException:
     my_bar = st.progress(0)
 
-
-col1, col2, col3, col4 = st.columns(4)
-with col1:
+# Interface for image controls
+control_col_1, control_col_2= st.columns([1,1])
+with control_col_1:
     blk_percent=50.0
     blk_filter_enabled=st.checkbox("Enable the Black Pixel Filter?",value=True,key="blk_filter_enabled")
     if blk_filter_enabled:
         blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=0.01, value=0.50, min_value=0.0, max_value=1.0)
-        
+
+# Interface to view images and rate images
+col1, col2= st.columns([1,5])
+with col1:
+      
     st.button(label="Yes", key="yes_button", on_click=yes_button, kwargs={
                "blk_percent": blk_percent,"blk_filter_enabled":blk_filter_enabled})
     st.button(label="No", key="no_button", on_click=no_button, kwargs={
@@ -208,15 +212,15 @@ with col2:
                 else:
                     caption=f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
                 
-                st.image(image, caption=caption, width=250)
+                st.image(image, caption=caption, width=600)
 
-with col4:
-    st.download_button(
-        label="Download data as CSV 💻",
-        data=create_csv(),
-        file_name=create_csv_name(),
-        mime='text/csv',
-    )
+
+st.download_button(
+    label="Download data as CSV 💻",
+    data=create_csv(),
+    file_name=create_csv_name(),
+    mime='text/csv',
+)
 
 with st.expander("See Dataset Details 📈"):
     st.dataframe(st.session_state.df)
