@@ -1,4 +1,3 @@
-from tkinter import image_names
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
@@ -171,6 +170,14 @@ with control_col_1:
     if blk_filter_enabled:
         blk_percent = st.slider("Percentage of Black Pixels Allowed:", step=0.01, value=0.50, min_value=0.0, max_value=1.0)
 
+with control_col_2:
+    resize_allowed = False
+    show_resize_controls = st.checkbox(label='Show Resize Controls', value=False)
+    if show_resize_controls:
+        height = st.slider('Height:', 500, 200, 1200, step=50)
+        width = st.slider('Width', 800, 200, 1200, step=50)
+        resize_allowed = st.checkbox(label='Resize', value=False)
+
 # Interface to view images and rate images
 col1, col2= st.columns([1,5])
 with col1:
@@ -212,6 +219,9 @@ with col2:
                 else:
                     caption=f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
                 
+                # resize image if user clicked resize allowed checkbox
+                if resize_allowed:
+                    image = image.resize((width, height))
                 st.image(image, caption=caption, width=600)
 
 
@@ -221,6 +231,7 @@ st.download_button(
     file_name=create_csv_name(),
     mime='text/csv',
 )
+
 
 with st.expander("See Dataset Details 📈"):
     st.dataframe(st.session_state.df)
