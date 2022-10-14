@@ -10,6 +10,12 @@
 
 </br>
 
+## How to Install Sniffer on Your Computer 🐕 :computer:
+1. Open your terminal<a href="url"><img src="https://user-images.githubusercontent.com/61564689/168151976-84c1ed67-518b-40b5-845e-6d859e43595b.png" align="center" height="30" width="30" ></a>
+2. Create an environment with Streamlit installed. See [Streamlit's instructions](https://docs.streamlit.io/library/get-started/installation#:~:text=Set%20up%20your%20virtual%20environment) for more details for your compouter.
+3. Inside your virtual environment with streamlit install run either `pip install pillow` or if you're using an Anaconda conda environment use `conda install -c conda-forge pillow`.
+4. You're done! 🎊
+
 ## How to Use Sniffer on Your Computer 🐕 🔧
 1. Create an environment with Streamlit installed. See [Streamlit's instructions](https://docs.streamlit.io/library/get-started/installation#:~:text=Set%20up%20your%20virtual%20environment) for more details for your compouter.
 2. Open your terminal<a href="url"><img src="https://user-images.githubusercontent.com/61564689/168151976-84c1ed67-518b-40b5-845e-6d859e43595b.png" align="center" height="30" width="30" ></a>
