@@ -223,7 +223,7 @@ col1, col2= st.columns([1,5])
 with col1:
     # if user chose to use scale to rate images render scale
     if rating_method == scale_str:
-        scale_rating = st.slider('Rate Image', min_slider, max_slider, 0, step=1)
+        scale_rating = st.slider('Rate Image', min_slider, max_slider, min_slider, step=1)
         st.button(label="Next",on_click=next_button,
                   kwargs={"blk_percent": blk_percent,
                          "blk_filter_enabled":blk_filter_enabled,
